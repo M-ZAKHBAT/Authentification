@@ -21,7 +21,7 @@ route.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const result = await userController.getOne(id);
-    if (result) res.json(result);
+    if (result) res.status(200).json(result);
   } catch (err) {
     res.status(500).json(err);
   }

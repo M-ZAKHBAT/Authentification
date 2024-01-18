@@ -11,11 +11,11 @@ export class UserService {
   };
 
   update = async (id, item) => {
-    const result = await User.findByIdAndUpdate({ _id, id }, item);
+    const result = await User.findByIdAndUpdate({ _id: id }, item);
     if (result) return this.getOne(id);
     return null;
   };
   getAll = async () => User.find({});
-  getOne = async (id) => User.findOne({ _id, id });
-  delete = async (id) => User.findByIdAndDelete({ _id, id });
+  getOne = async (id) => User.findOne({ _id: id });
+  delete = async (id) => User.findByIdAndDelete({ _id: id });
 }
