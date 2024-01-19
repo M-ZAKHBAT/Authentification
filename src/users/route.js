@@ -6,10 +6,12 @@ export const route = express();
 route.use(express.json());
 
 const userController = new UserController();
+
 // getAll
 route.get("/", async (req, res) => {
   try {
-    const result = await userController.getAll();
+    const { page, limit, filter } = req.query;
+    const result = await userController.getAll(page, limit, filter);
     res.json(result);
   } catch (err) {
     res.status(500).json(err);
@@ -29,6 +31,7 @@ route.get("/:id", async (req, res) => {
 
 //AddOne
 route.post("/register", async (req, res) => {
+  
   try {
     const { body } = req;
     // console.log({ body });

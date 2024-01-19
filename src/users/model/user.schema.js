@@ -19,9 +19,9 @@ const userSchema = new Schema({
     required: true,
     type: String,
   },
-  // salt: {
-  //   required: true,
-  //   type: String,
-  // },
+  salt: {
+    required: true,
+    type: String,
+  },
 });
 export const User = mongoose.model("User", userSchema, "Users");

@@ -9,5 +9,6 @@ export class UserController {
   update = (id, item) => this.userService.update(id, item);
   delete = (id) => this.userService.delete(id);
   getOne = (id) => this.userService.getOne(id);
-  getAll = () => this.userService.getAll();
+  getAll = (page, limit, filter) =>
+    this.userService.getAll(page, limit, filter);
 }
