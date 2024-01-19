@@ -1,6 +1,7 @@
 import { DbConnexion } from "./src/commun/connexiondb.js";
 import express from "express";
 import { route as userRouter } from "./src/users/route.js";
+import { route as recepRouter } from "./src/receps/route.js";
 const port = 3000;
 const database = new DbConnexion();
 const app = express();
@@ -10,8 +11,10 @@ app.get("/", (req, res) => {
   res.status(200).json({ statut: "UP" });
 });
 
+//users
 app.use("/users", userRouter);
-
+//receps
+app.use("/receps", recepRouter);
 database.generateConnexion().then(() => {
   app.listen(port, () => {
     console.log(`Starting Server : ${port}`);

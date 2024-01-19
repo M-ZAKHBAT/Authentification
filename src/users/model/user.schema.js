@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
+  id: mongoose.ObjectId,
   name: {
     required: true,
     type: String,
@@ -18,5 +19,9 @@ const userSchema = new Schema({
     required: true,
     type: String,
   },
+  // salt: {
+  //   required: true,
+  //   type: String,
+  // },
 });
 export const User = mongoose.model("User", userSchema, "Users");
