@@ -13,12 +13,12 @@ app.get("/", (req, res) => {
   res.status(200).json({ statut: "UP" });
 });
 
+//login
+app.use("/auth", authRouter); //API public
 //users
 app.use("/users", auth, userRouter); //API PRIVATE
 //receps
 app.use("/receps", auth, recepRouter); //API PRIVATE
-//login
-app.use("/auth", authRouter); //API public
 
 database.generateConnexion().then(() => {
   app.listen(port, () => {

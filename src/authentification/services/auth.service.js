@@ -12,35 +12,54 @@ export class AuthService {
     const user = await this.userService.findByParams("email", email);
     if (user) {
       if (bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ id: user.id }, "privatekey", {
-          expiresIn: "1d",
-        });
-        return { token, user: { email: user.email } };
+        const token = jwt.sign(
+          { ...this.getSinitizeUser(user) },
+          "privatekey",
+          {
+            expiresIn: "1d",
+          }
+        );
+        return { token };
       }
       return null;
     }
     return null;
   };
   register = async (item) => {
-    const user = await this.userService.Add(item);
+    try {
+      const user = await this.userService.Add(item);
+      if (user) {
+        const u = this.getSinitizeUser(user);
+        const token = jwt.sign(
+          { ...this.getSinitizeUser(user) },
+          "privatekey",
+          {
+            expiresIn: "1d",
+          }
+        );
+        return { token };
+      }
+    } catch (err) {
+      const { code, message } = err;
+      if (code == 11000) return "duplicate email";
+    }
+  };
+
+  resetPassword = async (body) => {
+    let user = await this.userService.findByParams("email", body.email);
     if (user) {
-      const token = jwt.sign({ id: user.id }, "privatekey", {
+      user.password = await bcrypt.hash(body.newPassword, user.salt);
+      user = await this.userService.update(user._id, user);
+      const token = jwt.sign({ ...this.getSinitizeUser(user) }, "privatekey", {
         expiresIn: "1d",
       });
-      return { token, user: { email: user.email } };
+      return { token };
     }
+    return null;
+  };
 
-    resetPassword = async (email, newPassword) => {
-      let user = await this.user.findByParams("email", email);
-      if (user) {
-        user.password = await bcrypt.hash(newPassword, user.salt);
-        user = await this.userService.update(user.id, user);
-        const token = jwt.sign({ id: user.id }, "privatekey", {
-          expiresIn: "1d",
-        });
-        return { token, user: { email: user.email } };
-      }
-      return null;
-    };
+  getSinitizeUser = (user) => {
+    const { _id, email, name } = user;
+    return { _id, email, name };
   };
 }

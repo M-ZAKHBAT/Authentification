@@ -1,15 +1,31 @@
+import jwt from "jsonwebtoken";
+// export const auth = (req, res, next) => {
+//   const token = req.headers.authorization;
+//   if (token) {
+//     const jwtToken = `${token}`.replace("Bearer", "");
+//     try {
+//       const payload = jwt.verify(jwtToken, "privatekey");
+//       if (payload) {
+//         next();
+//       } else {
+//         res.status(401).json();
+//       }
+//     } catch (err) {
+//       res.status(401).json();
+//     }
+//   } else res.status(401).json();
+// };
 export const auth = (req, res, next) => {
   const token = req.headers.authorization;
   if (token) {
     const jwtToken = `${token}`.replace("Bearer", "");
     try {
-      const payload = jwt.verify(jwtToken, "privatekey");
+      console.log({ jwtToken });
+      const payload = jwt.verify(jwtToken.trim(), "privatekey");
       if (payload) {
         next();
-      } else {
-        res.status(401).json();
-      }
-    } catch (err) {
+      } else res.status(401).json();
+    } catch (error) {
       res.status(401).json();
     }
   } else res.status(401).json();

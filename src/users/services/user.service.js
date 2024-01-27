@@ -1,21 +1,10 @@
 import { User } from "../model/user.schema.js";
 import bcrypt from "bcrypt";
 export class UserService {
-  // Add = (user) => {
-  //   const repository = new User({
-  //     name: user.name,
-  //     email: user.email,
-  //     password: user.password,
-  //   });
-  //   return repository.save();
-  // };
   constructor() {
     this.saltRounds = 10;
   }
-  async sanitize(item) {
-    const { password, salt, ...user } = item;
-    return user;
-  }
+
   async getSchema(item) {
     const { name, email, password } = item;
     const salt = await bcrypt.genSalt(this.saltRounds);
@@ -24,7 +13,8 @@ export class UserService {
   }
   Add = async (item) => {
     this.collection = await this.getSchema(item);
-    return this.collection.save(item);
+    const user = await this.collection.save(item);
+    if (user) return user["_doc"];
   };
 
   update = async (id, item) => {
@@ -32,6 +22,8 @@ export class UserService {
       const user = await this.getOne(id);
       if (user) {
         item.password = await bcrypt.hash(item.password, user.salt);
+        item._id = id;
+        this.Add(item);
       } else {
         return null;
       }
@@ -40,8 +32,7 @@ export class UserService {
     if (result) return this.getOne(id);
     return null;
   };
-  getOne = async (id) => User.findOne({ _id: id });
-
+  getOne = (id) => User.findOne({ _id: id });
   delete = (id) => User.findByIdAndDelete({ _id: id });
   getAll = (page = 1, limit = 10, filter) => {
     if (page <= 0) page = 1;
@@ -58,7 +49,14 @@ export class UserService {
         });
       }
     }
-    return User.find(flt, {}, { limit, skip: (page - 1) * limit });
+    return User.find(
+      flt,
+      {
+        password: 0,
+        salt: 0,
+      },
+      { limit, skip: (page - 1) * limit }
+    );
   };
 
   findByParams(params, value) {

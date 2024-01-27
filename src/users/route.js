@@ -7,12 +7,16 @@ route.use(express.json());
 
 const userController = new UserController();
 
+const sanitize = (item) => {
+  const { password, salt, ...user } = item;
+  return user;
+};
 // getAll
 route.get("/", async (req, res) => {
   try {
     const { page, limit, filter } = req.query;
     const result = await userController.getAll(page, limit, filter);
-    res.json(result);
+    res.status(200).json(result);
   } catch (err) {
     res.status(500).json(err);
   }
@@ -28,16 +32,14 @@ route.get("/:id", async (req, res) => {
     res.status(500).json(err);
   }
 });
-
 //AddOne
 route.post("/register", async (req, res) => {
-  
   try {
     const { body } = req;
     // console.log({ body });
     const result = await userController.Add(body);
-    if (result) res.status(201).json(result);
-    res.status(404).json({ msg: "erreur" });
+    if (result) res.status(201).json(sanitize(result));
+    else res.status(404).json({ msg: "erreur" });
   } catch (err) {
     console.error(err);
     res.status(500).json();
@@ -50,7 +52,7 @@ route.put("/:id", async (req, res) => {
     const { id } = req.params;
     const { body } = req;
     const result = await userController.update(id, body);
-    if (!!result) {
+    if (result) {
       res.status(200).json(result);
     } else {
       res.status(404).json();

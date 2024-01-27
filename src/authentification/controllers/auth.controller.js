@@ -6,4 +6,5 @@ export class AuthController {
   }
   login = (item) => this.authService.login(item);
   register = (item) => this.authService.register(item);
+  resetPassword = (item) => this.authService.resetPassword(item);
 }
